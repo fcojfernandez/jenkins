@@ -31,6 +31,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hudson.test.Issue;
 
+import java.util.Objects;
+
 public class DescribableListTest {
 
     @Issue("JENKINS-49054")
@@ -44,6 +46,26 @@ public class DescribableListTest {
         xs.addCriticalField(Data.class, "list");
         String xml = xs.toXML(data);
         data = (Data) xs.fromXML(xml);
+        assertEquals("[1, 3]", data.toString());
+    }
+
+    @Test
+    @Issue("TODO")
+    public void unmarshallWithNullValues() {
+        // Extract from test above
+        final String xml ="<hudson.util.DescribableListTest_-Data>\n" +
+                "  <list>\n" +
+                "    <hudson.util.DescribableListTest_-Datum>1</hudson.util.DescribableListTest_-Datum>\n" +
+                "    <hudson.util.DescribableListTest_-Datum>2</hudson.util.DescribableListTest_-Datum>\n" +
+                "    <hudson.util.DescribableListTest_-Datum>3</hudson.util.DescribableListTest_-Datum>\n" +
+                "    <null/>" +
+                "  </list>\n" +
+                "</hudson.util.DescribableListTest_-Data>";
+
+        XStream2 xs = new XStream2();
+        xs.addCriticalField(Data.class, "list");
+        Data data = (Data) xs.fromXML(xml);
+        assertEquals(0, data.list.stream().filter(Objects::isNull).count());
         assertEquals("[1, 3]", data.toString());
     }
 
